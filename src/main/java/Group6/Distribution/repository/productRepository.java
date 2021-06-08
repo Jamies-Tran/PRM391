@@ -10,4 +10,9 @@ import java.util.List;
 public interface productRepository extends JpaRepository<product, Integer> {
     @Query(value = "SELECT p FROM product p")
     List<product> findAllProduct();
+
+    @Query(value = "SELECT product.*\n" +
+            "FROM product\n" +
+            "where product.code = :code", nativeQuery = true)
+    List<product> findByCode(String code);
 }
