@@ -15,4 +15,5 @@ public interface productRepository extends JpaRepository<product, Integer> {
             "FROM product\n" +
             "where product.code = :code", nativeQuery = true)
     List<product> findByCode(String code);
+
 }

@@ -1,6 +1,11 @@
 package Group6.Distribution.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "product")
@@ -26,9 +31,11 @@ public class product {
 
     @Column(name = "image")
     private String image;
+    @JsonIgnore
+    @OneToMany(mappedBy = "product")
+    private Set<ordpro> OrderWithProduct = new HashSet<>();
 
-    public product() {
-    }
+    public product() {}
 
     public product(Integer id, String name, String code, String category, int price, int stock, String image) {
         this.id = id;
@@ -38,6 +45,17 @@ public class product {
         this.price = price;
         this.stock = stock;
         this.image = image;
+    }
+
+    public product(Integer id, String name, String code, String category, int price, int stock, String image, Set<ordpro> orderWithProduct) {
+        this.id = id;
+        this.name = name;
+        this.code = code;
+        this.category = category;
+        this.price = price;
+        this.stock = stock;
+        this.image = image;
+        OrderWithProduct = orderWithProduct;
     }
 
     public Integer getId() {
@@ -95,4 +113,12 @@ public class product {
     public void setImage(String image) {
         this.image = image;
     }
+//
+//    public Set<ordpro> getOrderWithProduct() {
+//        return OrderWithProduct;
+//    }
+//
+//    public void setOrderWithProduct(Set<ordpro> orderWithProduct) {
+//        OrderWithProduct = orderWithProduct;
+//    }
 }

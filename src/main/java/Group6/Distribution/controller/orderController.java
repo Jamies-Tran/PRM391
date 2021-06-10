@@ -2,6 +2,7 @@ package Group6.Distribution.controller;
 
 import Group6.Distribution.model.order;
 
+import Group6.Distribution.model.ordpro;
 import Group6.Distribution.service.orderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ public class orderController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> one(@PathVariable Integer id) {
+
         return orderService.findOne(id);
     }
 
@@ -27,5 +29,11 @@ public class orderController {
     public List<order> findAllProduct() {
 
         return orderService.findAll();
+    }
+
+    @GetMapping("/detail/{id}")
+    public List<ordpro> detailOrder(@PathVariable int id) {
+
+        return orderService.viewOrder(id);
     }
 }

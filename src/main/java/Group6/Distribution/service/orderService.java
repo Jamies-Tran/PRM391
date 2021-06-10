@@ -3,8 +3,10 @@ package Group6.Distribution.service;
 import Group6.Distribution.model.order;
 
 
+import Group6.Distribution.model.ordpro;
 import Group6.Distribution.repository.orderRepository;
 
+import Group6.Distribution.repository.ordproRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,8 @@ public class orderService {
 
     @Autowired
     private orderRepository OrderRepository;
+    @Autowired
+    private ordproRepository OrdProRepository;
     private static Logger logger = LoggerFactory.getLogger(orderService.class);
 
 
@@ -34,8 +38,15 @@ public class orderService {
     }
 
     public List<order> findAll() {
-        List<order> lo = OrderRepository.findAll();
+        List<order> lo = OrderRepository.findAllOrder();
         return lo;
+    }
+
+    public List<ordpro> viewOrder(int id) {
+
+        List<ordpro> lop = OrdProRepository.ViewProductInOrder(id);
+
+        return lop;
     }
 
 }
