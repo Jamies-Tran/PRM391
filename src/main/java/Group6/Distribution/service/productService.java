@@ -43,9 +43,10 @@ public class productService {
         }
     }
 
-    public  ResponseEntity<?> update(product pt){
+    public  ResponseEntity<?> update(product pt, Integer id){
         try{
-            product p1 = productrepository.findById(pt.getId()).get();
+            product p1 = productrepository.findById(id).get();
+            p1.setId(id);
             p1.setName(pt.getName());
             p1.setCategory(pt.getCategory());
             p1.setCode(pt.getCode());

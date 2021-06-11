@@ -31,13 +31,13 @@ public class productController {
         return productservice.findOne(id);
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<?> update(@Valid @RequestBody product product) {
-        return productservice.update(product);
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@Valid @RequestBody product product, @PathVariable Integer id) {
+        return productservice.update(product, id);
 
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable Integer id) {
 
         return productservice.deleteById(id);
