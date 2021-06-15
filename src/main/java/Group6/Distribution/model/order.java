@@ -8,6 +8,7 @@ import javax.persistence.*;
 
 import java.sql.Timestamp;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -32,8 +33,9 @@ public class order {
 
     @Column(name = "totalOrderPrice")
     private int totalOrderPrice;
-    @JsonManagedReference
-    @OneToMany(mappedBy = "product")
+
+    //@JsonIgnore
+    @OneToMany(mappedBy = "order")
     private Set<ordpro> productInOrder = new HashSet<>();
 
     public order() {}
@@ -103,4 +105,6 @@ public class order {
     public void setProductInOrder(Set<ordpro> productInOrder) {
         this.productInOrder = productInOrder;
     }
+
+
 }

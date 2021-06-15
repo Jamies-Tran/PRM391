@@ -15,6 +15,7 @@ public class ordpro {
     @EmbeddedId
     private OrderProductID id = new OrderProductID();
 
+    @JsonIgnoreProperties({"image", "stock"})
     @ManyToOne
     @MapsId("productID")
     private product product;
@@ -22,6 +23,7 @@ public class ordpro {
     @JsonIgnore
     @ManyToOne
     @MapsId("orderID")
+    @JoinColumn(name = "order_id")
     private order order;
 
     @Column(name = "totalPrice")
@@ -36,6 +38,7 @@ public class ordpro {
 
         @Column(name = "product_id")
         private Integer productID;
+
 
         @Column(name = "order_id")
         private Integer orderID;
