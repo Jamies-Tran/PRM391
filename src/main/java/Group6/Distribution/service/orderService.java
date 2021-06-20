@@ -6,9 +6,12 @@ import Group6.Distribution.model.order;
 
 import Group6.Distribution.model.ordpro;
 import Group6.Distribution.repository.orderRepository;
+
 import java.sql.Timestamp;
+
 import Group6.Distribution.repository.ordproRepository;
 import Group6.Distribution.repository.productRepository;
+import org.aspectj.weaver.ast.Or;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class orderService {
@@ -38,7 +42,7 @@ public class orderService {
         try {
             Optional<order> Order = OrderRepository.findById(id);
             return ResponseEntity.status(HttpStatus.OK).body(Order);
-        } catch(NoSuchElementException e) {
+        } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order ID:  " + id + " Not Found");
         }
     }
@@ -57,9 +61,7 @@ public class orderService {
 
     public ResponseEntity<order> createOrder(customOrd cOrd) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-
         order Order = new order();
-        ordpro ordpro = new ordpro();
         Order.setOrderCus(cOrd.getOrderCus());
         Order.setOrderDis(cOrd.getOrderDis());
         Order.setOrderSta(cOrd.getOrderSta());
@@ -67,21 +69,27 @@ public class orderService {
         Order.setTotalOrderPrice(0);
         Set<ordpro> products = new HashSet<ordpro>();
 
-        List<Integer> listQuan = (List<Integer>)cOrd.getProductInOrder().stream().map(customOrd.listProduct::getQuantity);
+        List<Integer> listQuan = cOrd.getProductInOrder().stream().map(customOrd.listProduct::getQuantity).collect(Collectors.toList());
+        var ref = new Object() {
+            int i = 0;
+        };
 
-        ProductRepository.findAllById((List<Integer>)cOrd.getProductInOrder().stream().map(customOrd.listProduct::getProID))
+        ProductRepository.findAllById(cOrd.getProductInOrder().stream().map(customOrd.listProduct::getProID).collect(Collectors.toList()))
                 .forEach(prod -> {
-                     ordpro.setProduct(prod);
-                     int i = 0;
-                     ordpro.setQuantity(listQuan.get(i));
-                     ordpro.setTotalPrice(prod.getPrice()*listQuan.get(i));
-                     i++;
-                     products.add(ordpro);
-                     Order.setTotalOrderPrice(Order.getTotalOrderPrice() + ordpro.getTotalPrice());
+                    ordpro ordpro = new ordpro();
+                    ordpro.setProduct(prod);
+                    ordpro.setOrder(Order);
+                    ordpro.setQuantity(listQuan.get(ref.i));
+                    ordpro.setTotalPrice(prod.getPrice() * listQuan.get(ref.i));
+                    ref.i++;
+                    products.add(ordpro);
+                    Order.setTotalOrderPrice(Order.getTotalOrderPrice() + ordpro.getTotalPrice());
+
                 });
 
         Order.setProductInOrder(products);
         OrderRepository.save(Order);
+        OrdProRepository.saveAll(products);
         return ResponseEntity.status(HttpStatus.CREATED).body(Order);
     }
 

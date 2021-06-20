@@ -26,6 +26,9 @@ public class ordpro {
     @JoinColumn(name = "order_id")
     private order order;
 
+//    @Column(name = "order_id",insertable = false, updatable = false)
+//    private int order_id;
+
     @Column(name = "totalPrice")
     private int totalPrice;
 
@@ -80,6 +83,7 @@ public class ordpro {
         this.quantity = quantity;
     }
 
+
     public Group6.Distribution.model.product getProduct() {
         return product;
     }
@@ -94,6 +98,7 @@ public class ordpro {
 
     public void setOrder(Group6.Distribution.model.order order) {
         this.order = order;
+        //this.order_id = order.getId();
     }
 
     public int getTotalPrice() {

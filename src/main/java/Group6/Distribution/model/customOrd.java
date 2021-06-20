@@ -10,7 +10,7 @@ public class customOrd {
     private int orderSta;
     private Timestamp invoiceDate;
 
-    public class listProduct {
+    public static class listProduct {
         private int proID;
         private int quantity;
 
