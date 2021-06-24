@@ -31,8 +31,8 @@ public class product {
 
     @Column(name = "image")
     private String image;
-    @JsonIgnore
-    @OneToMany(mappedBy = "product")
+    //@JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "product")
     private Set<ordpro> OrderWithProduct = new HashSet<>();
 
     public product() {}

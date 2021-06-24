@@ -5,6 +5,7 @@ import Group6.Distribution.repository.productRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
@@ -64,9 +65,14 @@ public class productService {
 
     public ResponseEntity<String> deleteById(Integer id) {
         try {
-            product p1 = productrepository.findById(id).get();
-            productrepository.delete(p1);
-            return ResponseEntity.status(HttpStatus.OK).body("Product ID: " + id + " Deleted");
+            try{
+                product p1 = productrepository.findById(id).get();
+                productrepository.delete(p1);
+                return ResponseEntity.status(HttpStatus.OK).body("Product ID: " + id + " Deleted");
+            } catch(DataIntegrityViolationException ex) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Product ID: " + id + " still in another Orders");
+            }
+
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product ID: " + id + " Not found");
         }

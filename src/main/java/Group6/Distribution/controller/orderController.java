@@ -43,4 +43,14 @@ public class orderController {
         return orderService.createOrder(cOrd);
     }
 
+    @PatchMapping("/status/{id}")
+    public ResponseEntity<?> updateStatus(@PathVariable Integer id,@RequestBody order ord){
+        return orderService.updateStatus(id, ord);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> delete(@PathVariable Integer id) {
+
+        return orderService.deleteById(id);
+    }
 }

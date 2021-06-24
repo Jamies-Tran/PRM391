@@ -26,9 +26,6 @@ public class ordpro {
     @JoinColumn(name = "order_id")
     private order order;
 
-//    @Column(name = "order_id",insertable = false, updatable = false)
-//    private int order_id;
-
     @Column(name = "totalPrice")
     private int totalPrice;
 

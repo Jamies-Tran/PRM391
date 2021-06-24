@@ -35,7 +35,7 @@ public class order {
     private int totalOrderPrice;
 
     //@JsonIgnore
-    @OneToMany(mappedBy = "order")
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "order", orphanRemoval = true)
     private Set<ordpro> productInOrder = new HashSet<>();
 
     public order() {}

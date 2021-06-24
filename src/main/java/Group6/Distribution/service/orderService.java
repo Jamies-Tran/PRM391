@@ -5,6 +5,7 @@ import Group6.Distribution.model.order;
 
 
 import Group6.Distribution.model.ordpro;
+import Group6.Distribution.model.product;
 import Group6.Distribution.repository.orderRepository;
 
 import java.sql.Timestamp;
@@ -64,7 +65,9 @@ public class orderService {
         order Order = new order();
         Order.setOrderCus(cOrd.getOrderCus());
         Order.setOrderDis(cOrd.getOrderDis());
-        Order.setOrderSta(cOrd.getOrderSta());
+
+        Order.setOrderSta(0);
+        //Order.setOrderSta(cOrd.getOrderSta());
         Order.setInvoiceDate(timestamp);
         Order.setTotalOrderPrice(0);
         Set<ordpro> products = new HashSet<ordpro>();
@@ -93,4 +96,29 @@ public class orderService {
         return ResponseEntity.status(HttpStatus.CREATED).body(Order);
     }
 
+    public ResponseEntity<?> updateStatus(Integer id, order ord) {
+        try {
+            order Order = OrderRepository.findById(id).get();
+            Order.setOrderSta(ord.getOrderSta());
+            OrderRepository.save(Order);
+            return ResponseEntity.status(HttpStatus.OK).body(Order);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order ID:  " + id + " Not Found");
+        }
+    }
+
+    public ResponseEntity<String> deleteById(Integer id) {
+        try {
+            order p1 = OrderRepository.findById(id).get();
+            if(p1.getOrderSta() != 0 ) {
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Order ID: " + id + " is in wrong status");
+            }
+            else {
+                OrderRepository.delete(p1);
+                return ResponseEntity.status(HttpStatus.OK).body("Order ID: " + id + " Deleted");
+            }
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order ID: " + id + " Not found");
+        }
+    }
 }
