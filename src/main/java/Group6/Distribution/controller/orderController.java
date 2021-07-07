@@ -37,10 +37,10 @@ public class orderController {
         return orderService.viewOrder(id);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<order> add(@Valid @RequestBody customOrd cOrd) {
+    @PostMapping("/{id}/create")
+    public ResponseEntity<order> add(@Valid @RequestBody customOrd cOrd, @PathVariable Integer id) {
 
-        return orderService.createOrder(cOrd);
+        return orderService.createOrder(cOrd,id);
     }
 
     @PatchMapping("/status/{id}")

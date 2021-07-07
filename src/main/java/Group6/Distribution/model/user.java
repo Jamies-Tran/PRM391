@@ -1,6 +1,8 @@
 package Group6.Distribution.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -32,7 +34,7 @@ public class user {
     @Column(name = "role")
     private String role;
 
-    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany
     @JoinTable(name = "userord",
             joinColumns =
                     { @JoinColumn(name = "user_id", referencedColumnName = "id") },

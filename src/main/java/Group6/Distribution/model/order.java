@@ -19,7 +19,7 @@ public class order {
     private Integer id;
 
     @Column(name = "orderDis")
-    private String orderDis;
+    private String orderDis = "Grocery system";
 
     @Column(name = "orderCus")
     private String orderCus;
@@ -34,9 +34,14 @@ public class order {
     @Column(name = "totalOrderPrice")
     private int totalOrderPrice;
 
-    //@JsonIgnore
+
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "order", orphanRemoval = true)
     private Set<ordpro> productInOrder = new HashSet<>();
+
+    @ManyToOne
+    @JoinTable(name = "userord",joinColumns = { @JoinColumn(name = "order_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "user_id", referencedColumnName = "id") })
+    @JsonIgnore
+    private user User;
 
     public order() {}
 
@@ -105,6 +110,9 @@ public class order {
     public void setProductInOrder(Set<ordpro> productInOrder) {
         this.productInOrder = productInOrder;
     }
+    //getuser got bug infinite loop
 
-
+    public void setUser(user user) {
+        User = user;
+    }
 }
