@@ -38,7 +38,7 @@ public class orderController {
     }
 
     @PostMapping("/{id}/create")
-    public ResponseEntity<order> add(@Valid @RequestBody customOrd cOrd, @PathVariable Integer id) {
+    public ResponseEntity<?> add(@Valid @RequestBody customOrd cOrd, @PathVariable Integer id) {
 
         return orderService.createOrder(cOrd,id);
     }
@@ -52,5 +52,10 @@ public class orderController {
     public ResponseEntity<String> delete(@PathVariable Integer id) {
 
         return orderService.deleteById(id);
+    }
+
+    @PatchMapping("/{userID}/update/{orderID}")
+    public ResponseEntity<?> updateOrder(@PathVariable Integer userID,@RequestBody customOrd cOrd, @PathVariable Integer orderID){
+        return orderService.updateOrder(cOrd,userID,orderID);
     }
 }

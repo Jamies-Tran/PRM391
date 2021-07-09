@@ -35,7 +35,7 @@ public class order {
     private int totalOrderPrice;
 
 
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "order", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "order", cascade= CascadeType.ALL)
     private Set<ordpro> productInOrder = new HashSet<>();
 
     @ManyToOne
@@ -110,7 +110,11 @@ public class order {
     public void setProductInOrder(Set<ordpro> productInOrder) {
         this.productInOrder = productInOrder;
     }
-    //getuser got bug infinite loop
+
+    @JsonIgnore
+    public user getUser() {
+        return User;
+    }
 
     public void setUser(user user) {
         User = user;

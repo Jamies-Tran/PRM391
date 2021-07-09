@@ -57,39 +57,44 @@ public class orderService {
         return lop;
     }
 
-    public ResponseEntity<order> createOrder(customOrd cOrd, Integer id) {
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        order Order = new order();
-        user Customer = UserRepository.findById(id).get();
-        Order.setOrderCus(Customer.getUsername());
+    public ResponseEntity<?> createOrder(customOrd cOrd, Integer id) {
+        try {
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            order Order = new order();
+            user Customer = UserRepository.findById(id).get();
+            Order.setOrderCus(Customer.getUsername());
 
-        Order.setOrderSta(0);
-        Order.setInvoiceDate(timestamp);
-        Order.setTotalOrderPrice(0);
-        Set<ordpro> products = new HashSet<ordpro>();
+            Order.setOrderSta(0);
+            Order.setInvoiceDate(timestamp);
+            Order.setTotalOrderPrice(0);
+            Set<ordpro> products = new HashSet<ordpro>();
 
-        List<Integer> listQuan = cOrd.getProductInOrder().stream().map(customOrd.listProduct::getQuantity).collect(Collectors.toList());
-        var ref = new Object() {
-            int i = 0;
-        };
-        ProductRepository.findAllById(cOrd.getProductInOrder().stream().map(customOrd.listProduct::getProID).collect(Collectors.toList()))
-                .forEach(prod -> {
-                    ordpro ordpro = new ordpro();
-                    ordpro.setProduct(prod);
-                    ordpro.setOrder(Order);
-                    ordpro.setQuantity(listQuan.get(ref.i));
-                    ordpro.setTotalPrice(prod.getPrice() * listQuan.get(ref.i));
-                    ref.i++;
-                    products.add(ordpro);
-                    Order.setTotalOrderPrice(Order.getTotalOrderPrice() + ordpro.getTotalPrice());
+            List<Integer> listQuan = cOrd.getProductInOrder().stream().map(customOrd.listProduct::getQuantity).collect(Collectors.toList());
+            var ref = new Object() {
+                int i = 0;
+            };
+            ProductRepository.findAllById(cOrd.getProductInOrder().stream().map(customOrd.listProduct::getProID).collect(Collectors.toList()))
+                    .forEach(prod -> {
+                        ordpro ordpro = new ordpro();
+                        ordpro.setProduct(prod);
+                        ordpro.setOrder(Order);
+                        ordpro.setQuantity(listQuan.get(ref.i));
+                        ordpro.setTotalPrice(prod.getPrice() * listQuan.get(ref.i));
+                        ref.i++;
+                        products.add(ordpro);
+                        Order.setTotalOrderPrice(Order.getTotalOrderPrice() + ordpro.getTotalPrice());
 
-                });
-        Order.setProductInOrder(products);
-        Order.setUser(Customer);
-        OrderRepository.save(Order);
-        OrdProRepository.saveAll(products);
+                    });
+            Order.setProductInOrder(products);
+            Order.setUser(Customer);
+            OrderRepository.save(Order);
+            OrdProRepository.saveAll(products);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(Order);
+            return ResponseEntity.status(HttpStatus.CREATED).body(Order);
+        }  catch (NoSuchElementException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer ID:  " + id + " Not Found");
+    }
+
     }
 
     public ResponseEntity<?> updateStatus(Integer id, order ord) {
@@ -116,5 +121,50 @@ public class orderService {
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order ID: " + id + " Not found");
         }
+    }
+
+    public ResponseEntity<?> updateOrder(customOrd cOrd, Integer userID, Integer orderID) {
+        try {
+            order Order = OrderRepository.findById(orderID).get();
+            if(Order.getOrderSta() != 0 ) {
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Order ID: " + orderID + " is in wrong status");
+            }
+            else {
+                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                user Customer = UserRepository.findById(userID).get();
+                Order.setId(orderID);
+                Order.setOrderCus(Customer.getUsername());
+                Order.setOrderSta(0);
+                Order.setInvoiceDate(timestamp);
+                Order.setTotalOrderPrice(0);
+                Set<ordpro> products = new HashSet<ordpro>();
+
+                List<Integer> listQuan = cOrd.getProductInOrder().stream().map(customOrd.listProduct::getQuantity).collect(Collectors.toList());
+                var ref = new Object() {
+                    int i = 0;
+                };
+                ProductRepository.findAllById(cOrd.getProductInOrder().stream().map(customOrd.listProduct::getProID).collect(Collectors.toList()))
+                        .forEach(prod -> {
+                            ordpro ordpro = new ordpro();
+                            ordpro.setProduct(prod);
+                            ordpro.setOrder(Order);
+                            ordpro.setQuantity(listQuan.get(ref.i));
+                            ordpro.setTotalPrice(prod.getPrice() * listQuan.get(ref.i));
+                            ref.i++;
+                            products.add(ordpro);
+                            Order.setTotalOrderPrice(Order.getTotalOrderPrice() + ordpro.getTotalPrice());
+
+                        });
+                Order.setProductInOrder(products);
+                Order.setUser(Customer);
+                OrderRepository.save(Order);
+                OrdProRepository.saveAll(products);
+                return ResponseEntity.status(HttpStatus.OK).body(Order);
+            }
+
+        }catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("UserID or OrderID: " + " Not found");
+        }
+
     }
 }
