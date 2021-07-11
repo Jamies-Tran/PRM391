@@ -1,1 +1,0 @@
-// ToDo: food detail

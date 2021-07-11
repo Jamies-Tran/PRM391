@@ -1,29 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:hci_201/views/chef_screen.dart';
-import 'package:hci_201/views/err.dart';
-import 'package:hci_201/views/loading.dart';
-import 'package:hci_201/views/login.dart';
-import 'package:hci_201/views/main_screen.dart';
-import 'package:hci_201/views/new_visitor.dart';
-import 'package:hci_201/views/register.dart';
-import 'package:hci_201/views/food_category.dart';
-import 'package:hci_201/views/show_cooker.dart';
-import 'package:hci_201/widgets/chef_profile.dart';
-import 'package:hci_201/widgets/search.dart';
+import 'package:hci_201/modelGrocery/user.dart';
+import 'package:hci_201/serviceGrocery/auth_service.dart';
+import 'package:hci_201/viewGrocery/booking.dart';
+import 'package:hci_201/wrapper.dart';
+import 'package:provider/provider.dart';
 
-void main() => runApp(MaterialApp(
-  routes: {
-    '/' : (context) => Visitor(),
-    '/login' : (context) => Login(),
-    '/reg' : (context) => Register(),
-    '/loading' : (context) => Loading(),
-    '/reg2' : (context) => Register2(),
-    '/search' : (context) => Search(),
-    '/chef' : (context) => ChefScreen(),
-    '/main' : (context) => MainScreen(),
-    '/chef_profile' : (context) => ChefProfile(),
-    '/show_cooker' : (context) => ShowCooker(),
-    '/err' : (context) => Error()
-  },
-));
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    final AuthService _auth = AuthService();
+    return StreamProvider<Users>.value(
+      value: _auth.user,
+      child: MaterialApp(
+        home: Wrapper(),
+        routes: {
+          '/booking' : (context) => Booking(),
+        }
+      ),
+    );
+  }
+}
+
 

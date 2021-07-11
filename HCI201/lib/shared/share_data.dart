@@ -1,0 +1,4 @@
+enum USER_ROLE {
+  GROCERY,
+  ADMIN
+}

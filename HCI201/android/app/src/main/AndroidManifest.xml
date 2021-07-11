@@ -1,8 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.hci_201">
+    <uses-permission android:name="android.permission.INTERNET" />
    <application
         android:label="hci_201"
         android:icon="@mipmap/ic_launcher">
+<!--        android:usesCleartextTraffic="true"-->
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
