@@ -1,14 +1,12 @@
 package Group6.Distribution.controller;
 
+import Group6.Distribution.model.loginForm;
 import Group6.Distribution.model.order;
 import Group6.Distribution.model.user;
 import Group6.Distribution.service.userService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,5 +26,11 @@ public class userController {
     public List<user> findAllProduct() {
 
         return userservice.findAll();
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity login(@RequestBody loginForm lf) {
+
+        return userservice.login(lf);
     }
 }

@@ -1,5 +1,6 @@
 package Group6.Distribution.service;
 
+import Group6.Distribution.model.loginForm;
 import Group6.Distribution.model.user;
 import Group6.Distribution.repository.userRepository;
 import org.slf4j.Logger;
@@ -34,4 +35,14 @@ public class userService {
         List<user> lu = UserRepository.findAllUser();
         return lu;
     }
+    public ResponseEntity login(loginForm lf) {
+        Optional<user> User = UserRepository.findUser(lf.getUsername(), lf.getPassword());
+        if(User.isPresent()){
+            return new ResponseEntity(HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+    }
+
 }
