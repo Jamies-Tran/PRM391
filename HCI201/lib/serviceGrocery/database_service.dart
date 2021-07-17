@@ -32,10 +32,6 @@ class DBService {
     return _userCollection.snapshots();
   }
 
-  Stream<DocumentSnapshot> get userInformation2 {
-    return _userCollection.document(uid).snapshots();
-  }
-
   Future<DocumentSnapshot> userInformation3() {
     return _userCollection.document(uid).get();
   }

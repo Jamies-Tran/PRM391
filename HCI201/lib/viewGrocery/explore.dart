@@ -50,7 +50,8 @@ class _ExploreState extends State<Explore> {
                           return GestureDetector(
                             onTap: () {
                               Navigator.pushNamed(context, "/booking", arguments: {
-                                'productId' : _waterProductList[index].id
+                                'productId' : _waterProductList[index].id,
+                                'userUid' : widget.user.uid
                               });
                             },
                             child: Container(

@@ -1,9 +1,12 @@
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hci_201/modelGrocery/product.dart';
 import 'package:hci_201/serviceGrocery/api_service.dart';
 import 'package:hci_201/shared/text_decoration.dart';
+
 
 class Booking extends StatefulWidget {
   @override
@@ -16,7 +19,13 @@ class _BookingState extends State<Booking> {
 
   Product _product;
 
-  int id;
+  int _id;
+
+  String _userUid;
+
+  String _dateTimeNow;
+
+  String _dateTimePicker = "__/__/____";
 
   String _getProductCategoryVN(String _category) {
     if(_category.compareTo("Water") == 0) {
@@ -30,12 +39,9 @@ class _BookingState extends State<Booking> {
   @override
   Widget build(BuildContext context) {
     Map _data = ModalRoute.of(context).settings.arguments;
-    id = _data['productId'];
-    _api.getProductById(id).then((value) {
-      setState(() {
-        _product = value;
-      });
-    });
+    _id = _data['productId'];
+    _userUid = _data['userUid'];
+    _dateTimeNow = formatDate(DateTime.now(), [dd, "/", mm, "/", yyyy]);
     return Scaffold(
       appBar: AppBar(
         title: Text("Booking", style: textStyle20),
@@ -47,10 +53,12 @@ class _BookingState extends State<Booking> {
             child: Column(
               children: [
                 Container(
-                  child: Text("Thông tin mặt hàng", style: textStyle25.copyWith(color: Colors.blueGrey)),
+                  margin: EdgeInsets.symmetric(vertical: 20),
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: Text("Thông tin sản phẩm", style: textStyle25.copyWith(color: Colors.blueGrey)),
                 ),
                 FutureBuilder(
-                    future: _api.getProductById(id),
+                    future: _api.getProductById(_id),
                     builder: (context, snapshot) {
                       if(snapshot.hasData) {
                         _product = snapshot.data;
@@ -84,7 +92,7 @@ class _BookingState extends State<Booking> {
                               child: Row(
                                 children: [
                                   Text("Giá: ", style: textStyle20.copyWith(color: Colors.blueGrey)),
-                                  Text("${_product.price ~/ 1000}.000 VND", style: textStyle20.copyWith(color: Colors.green))
+                                  Text("${_product.price ~/ 1000}.000 VND / 1 lon", style: textStyle20.copyWith(color: Colors.green))
                                 ],
                               ),
                             ),
@@ -105,6 +113,78 @@ class _BookingState extends State<Booking> {
                         return SpinKitChasingDots(color: Colors.green);
                       }
                     }
+                ),
+
+                Container(
+                  margin: EdgeInsets.symmetric(vertical: 20),
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: Text("Thông tin đơn hàng", style: textStyle25.copyWith(color: Colors.blueGrey)),
+                ),
+
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: Row(
+                    children: [
+                      Text("Ngày đặt đơn: ", style: textStyle20.copyWith(color: Colors.blueGrey)),
+                      Text("$_dateTimeNow", style: textStyle20.copyWith(color: Colors.green))
+                    ],
+                  ),
+                ),
+
+                // hẹn ngày giao hàng
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Ngày giao hàng: (click ô bên dưới để chọn ngày) ", style: textStyle20.copyWith(color: Colors.blueGrey)),
+                      RaisedButton.icon(
+                          onPressed: () {
+                            DatePicker.showDatePicker(
+                                context,
+                                showTitleActions: true,
+                                currentTime: DateTime.now(),
+                                minTime: DateTime.now(),
+                                maxTime: DateTime.now().add(Duration(days: 28)),
+                                onConfirm: (time) {
+                                  setState(() {
+                                    _dateTimePicker = formatDate(time, [dd, "/", mm, "/", yyyy]);
+                                  });
+                                },
+                            );
+                          },
+                          icon: Icon(Icons.calendar_today_rounded, color: Colors.white),
+                          label: Text("$_dateTimePicker", style: textStyle20.copyWith(color: Colors.white),),
+                          color: Colors.green,
+                      )
+                    ],
+                  ),
+                ),
+
+
+                //chọn số lượng
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: Row(
+                    children: [
+                      Text("Chọn số lượng: ", style: textStyle20.copyWith(color: Colors.blueGrey)),
+                      Icon(Icons.arrow_back_ios, color: Colors.green,)
+                    ],
+                  ),
+                ),
+
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  child: ButtonTheme(
+                      minWidth: MediaQuery.of(context).size.width * 0.5,
+                      height: 100,
+                      child: RaisedButton.icon(
+                        onPressed: () {},
+                        icon: Icon(Icons.shopping_cart, color: Colors.white, size: 20),
+                        label: Text("Đặt hàng", style: textStyle20.copyWith(color: Colors.white)),
+                        color: Colors.green,
+                      )
+                  ),
                 ),
 
               ],
