@@ -5,6 +5,8 @@ import 'package:hci_201/viewGrocery/booking.dart';
 import 'package:hci_201/wrapper.dart';
 import 'package:provider/provider.dart';
 
+import 'package:hci_201/viewGrocery/sales.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -20,6 +22,7 @@ class MyApp extends StatelessWidget {
         home: Wrapper(),
         routes: {
           '/booking' : (context) => Booking(),
+          '/sales' : (context) => SalesReportScreen(),
         }
       ),
     );
