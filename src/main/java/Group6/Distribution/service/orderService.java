@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -122,7 +123,7 @@ public class orderService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order ID: " + id + " Not found");
         }
     }
-
+    @Transactional
     public ResponseEntity<?> updateOrder(customOrd cOrd, Integer userID, Integer orderID) {
         try {
             order Order = OrderRepository.findById(orderID).get();
@@ -130,6 +131,7 @@ public class orderService {
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Order ID: " + orderID + " is in wrong status");
             }
             else {
+                OrdProRepository.deleteByOrderID(orderID);
                 Timestamp timestamp = new Timestamp(System.currentTimeMillis());
                 user Customer = UserRepository.findById(userID).get();
                 Order.setId(orderID);
@@ -155,6 +157,7 @@ public class orderService {
                             Order.setTotalOrderPrice(Order.getTotalOrderPrice() + ordpro.getTotalPrice());
 
                         });
+
                 Order.setProductInOrder(products);
                 Order.setUser(Customer);
                 OrderRepository.save(Order);
