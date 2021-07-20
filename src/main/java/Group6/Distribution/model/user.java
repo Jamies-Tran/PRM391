@@ -1,6 +1,7 @@
 package Group6.Distribution.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -19,7 +20,7 @@ public class user {
     private String username;
 
     @JsonIgnore
-    @Column(name = "password")
+    @Column(name = "password" )
     private String password;
 
     @Column(name = "phone")
@@ -45,6 +46,15 @@ public class user {
     public user() {
     }
 
+    public user(Integer id, String username, String password, int phone, String email, String address, String role) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.phone = phone;
+        this.email = email;
+        this.address = address;
+        this.role = role;
+    }
 
     public user(Integer id, String username, String password, int phone, String email, String address, String role, Set<order> orderOfUser) {
         this.id = id;
@@ -73,10 +83,11 @@ public class user {
         this.username = username;
     }
 
+    @JsonIgnore
     public String getPassword() {
         return password;
     }
-
+    @JsonProperty
     public void setPassword(String password) {
         this.password = password;
     }

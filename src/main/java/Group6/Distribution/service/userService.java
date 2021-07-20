@@ -1,6 +1,7 @@
 package Group6.Distribution.service;
 
 import Group6.Distribution.model.loginForm;
+import Group6.Distribution.model.product;
 import Group6.Distribution.model.user;
 import Group6.Distribution.repository.userRepository;
 import org.slf4j.Logger;
@@ -45,4 +46,9 @@ public class userService {
         }
     }
 
+    public ResponseEntity<?> add(user User) {
+
+        UserRepository.save(User);
+        return ResponseEntity.status(HttpStatus.CREATED).body(User);
+    }
 }
