@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hci_201/modelGrocery/order.dart';
+import 'package:hci_201/modelGrocery/order_product.dart';
 import 'package:hci_201/modelGrocery/product.dart';
 import 'package:hci_201/modelGrocery/user.dart';
 import 'package:hci_201/serviceGrocery/api_service.dart';
@@ -12,14 +13,14 @@ import 'package:hci_201/shared/text_decoration.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
 
-class Booking extends StatefulWidget {
-  const Booking({Key key}) : super(key: key);
+class EditOrder extends StatefulWidget {
+  const EditOrder({Key key}) : super(key: key);
 
   @override
-  _BookingState createState() => _BookingState();
+  _EditOrderState createState() => _EditOrderState();
 }
 
-class _BookingState extends State<Booking> {
+class _EditOrderState extends State<EditOrder> {
 
   final List<String> _cityList = [
     "Hồ Chí Minh",
@@ -30,11 +31,11 @@ class _BookingState extends State<Booking> {
     "Bình Phước",
     "Bình Thuận"
   ];
-  
+
   final ApiService _api = ApiService();
 
   String _locationValue = "Hồ Chí Minh";
-  
+
   Product _product;
 
   DateTime _pickStartDate = DateTime.now().add(Duration(days: 4));
@@ -42,7 +43,15 @@ class _BookingState extends State<Booking> {
   String _getConfirmDate = "";
 
   String _datePickerText = "Ấn để chọn ngày";
-  
+
+  bool _isEditDate = false;
+
+  bool _isEditDateDone = false;
+
+  bool _isEditQuantityDone = false;
+
+  bool _isEditQuantity = false;
+
   bool _isQuantityValid(int _total, int _takeAway) {
     return _total >= _takeAway;
   }
@@ -63,6 +72,12 @@ class _BookingState extends State<Booking> {
 
   final _formatPrice = NumberFormat("##,000");
 
+  DocumentSnapshot _orderDoc;
+
+  Order _order;
+
+  OrderProduct _orderProduct;
+
   // tạo order
   int _totalPrice = 0;
 
@@ -70,7 +85,7 @@ class _BookingState extends State<Booking> {
   Users _user;
 
   // tạo order
-  String _invoiceDate = formatDate(DateTime.now(), [yyyy, " - ", MM, " - ", dd]);
+  //String _invoiceDate = formatDate(DateTime.now(), [yyyy, " - ", MM, " - ", dd]);
 
 
   int _calculatingRemain() {
@@ -88,6 +103,10 @@ class _BookingState extends State<Booking> {
     Map _data = ModalRoute.of(context).settings.arguments;
     _user = _data['user'];
     _product = _data['product'];
+    _orderDoc = _data['order'];
+    _orderProduct = _data['orderProduct'];
+    _order = Order(id: _orderDoc.data['id'], orderCus: _orderDoc.data['order_cus'], orderStat: _orderDoc.data['order_stat'], invoiceDate: _orderDoc.data['invoice_date'], totalPrice: _orderDoc.data['total_price']);
+    print("order: ${_order.totalPrice} _ orderproduct: ${_orderProduct.totalPrice}");
     final DBService _database = DBService();
     return Scaffold(
       appBar: myAppBar("Đặt hàng"),
@@ -95,13 +114,76 @@ class _BookingState extends State<Booking> {
         child: SingleChildScrollView(
           child: Column(
             children: [
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                margin: EdgeInsets.symmetric(vertical: 10),
+                child: Row(
+                  children: [
+                    Text("1.Địa điểm giao hàng", style: textStyle30.copyWith(color: Colors.blueGrey)),
+                    Text("*", style: textStyle30.copyWith(color: Colors.red)),
+                  ],
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                      child: DropdownButton(
+                        value: _locationValue,
+                        underline: Container(
+                          height: 2,
+                          color: Colors.indigo,
+                        ),
+                        items: _cityList.map<DropdownMenuItem<String>>((e) => DropdownMenuItem(
+                            value: e,
+                            child: Text(e, style: textStyle20.copyWith(color: Colors.black45))
+                        )).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _locationValue = value;
+                          });
+                        },
+                      ),
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      child: TextField(
+                        decoration: InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Colors.black,
+                                  width: 1.0
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Colors.lightBlue,
+                                  width: 1.0
+                              ),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Colors.red,
+                                  width: 1.0
+                              ),
+                            ),
+                            labelText: "điền địa chỉ tại đây",
+                            labelStyle: textStyle20.copyWith(color: Colors.black45)
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
 
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                 margin: EdgeInsets.symmetric(vertical: 10),
                 child: Row(
                   children: [
-                    Text("1.Thời gian", style: textStyle30.copyWith(color: Colors.blueGrey)),
+                    Text("2.Thời gian", style: textStyle30.copyWith(color: Colors.blueGrey)),
                     Text("*", style: textStyle30.copyWith(color: Colors.red)),
                   ],
                 ),
@@ -109,7 +191,7 @@ class _BookingState extends State<Booking> {
 
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
+                child: _isEditDate == true ? Row(
                   children: [
                     ButtonTheme(
                       minWidth: MediaQuery.of(context).size.width * 0.5,
@@ -125,8 +207,6 @@ class _BookingState extends State<Booking> {
                             onConfirm: (time) {
                               setState(() {
                                 _datePickerText = formatDate(time, [yyyy, "-", mm, "-", dd]);
-                                _getConfirmDate = _datePickerText;
-                                print("$_getConfirmDate");
                               });
                             },
                           );
@@ -135,8 +215,29 @@ class _BookingState extends State<Booking> {
                         color: Colors.grey,
                       ),
                     ),
+                    IconButton(icon: Icon(Icons.cancel, color: Colors.red,), onPressed: (){
+                      setState(() {
+                        _isEditDate = false;
+                      });
+                    }),
+                    IconButton(icon: Icon(Icons.check_circle_outline, color: Colors.green), onPressed: (){
+                      setState(() {
+                        _getConfirmDate = _datePickerText;
+                        _isEditDate = false;
+                        _isEditDateDone = true;
+                      });
+                    })
                   ],
-                ),
+                ) : Row(
+                  children: [
+                    Text(_isEditDateDone == true ? "$_getConfirmDate" : "${_order.invoiceDate}", style: textStyle25.copyWith(color: _isEditDateDone == true ? Colors.green : Colors.blue)),
+                    IconButton(icon: Icon(Icons.edit, color: Colors.black45), onPressed: (){
+                      setState(() {
+                        _isEditDate = true;
+                      });
+                    })
+                  ],
+                )
               ),
 
               Container(
@@ -144,32 +245,24 @@ class _BookingState extends State<Booking> {
                 margin: EdgeInsets.symmetric(vertical: 10),
                 child: Row(
                   children: [
-                    Text("2.Số lượng", style: textStyle30.copyWith(color: Colors.blueGrey)),
+                    Text("3.Số lượng", style: textStyle30.copyWith(color: Colors.blueGrey)),
                     Text("*", style: textStyle30.copyWith(color: Colors.red)),
                   ],
                 ),
               ),
 
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  children: [
-                    Text("*1 thùng gồm 24 đơn vị", style: textStyle15.copyWith(color: Colors.red)),
-                  ],
-                ),
-              ),
 
-              FutureBuilder(
-                  future: _api.getProductById(_product.id),
-                  builder: (context, snapshot) {
-                    if(snapshot.hasData) {
-                      _product = snapshot.data;
-                      return Container(
+               FutureBuilder(
+                future: _api.getProductById(_product.id),
+                builder: (context, snapshot) {
+                  if(snapshot.hasData) {
+                    _product = snapshot.data;
+                    return Container(
                         child: Column(
                           children: [
                             Container(
                               padding: EdgeInsets.symmetric(vertical: 20),
-                              child: Row(
+                              child: _isEditQuantity == true ? Row(
                                 children: [
                                   SizedBox(width: 40),
                                   ButtonTheme(
@@ -229,6 +322,17 @@ class _BookingState extends State<Booking> {
                                     ),
                                   ),
                                 ],
+                              ) : Container(
+                                    child: Row(
+                                      children: [
+                                        Text("Bạn đã đặt với số lượng: ${_orderProduct.quantity} đơn vị", style: textStyle20.copyWith(color: Colors.blue)),
+                                        IconButton(icon: Icon(Icons.edit, color: Colors.black45), onPressed: (){
+                                          setState(() {
+                                            _isEditQuantity = true;
+                                          });
+                                        })
+                                    ],
+                        ),
                               ),
                             ),
                             Container(
@@ -250,58 +354,7 @@ class _BookingState extends State<Booking> {
                                   color: _isQuantityValid(_product.stock, _calculatingRemain()) == true ? Colors.green : Colors.grey,
                                   child: Text(_isQuantityValid(_product.stock, _calculatingRemain()) == true ? "Thêm vào giỏ hàng" : "Kho hàng không đủ", style: textStyle20.copyWith(color: Colors.white)),
                                   onPressed: ()  {
-                                    if(_calculatingRemain() == 0 || _getConfirmDate == "") {
-                                      showDialog(
-                                          context: context,
-                                          builder: (dialogContext) {
-                                            return CupertinoAlertDialog(
-                                              title: Text("Thiếu thông tin", style: textStyle20.copyWith(color: Colors.black45)),
-                                              content: Container(
-                                                child: Center(
-                                                  child: Text("Vui lòng điền đủ thông tin", style: textStyle20.copyWith(color: Colors.black45)),
-                                                ),
-                                              ),
-                                              actions: [
-                                                CupertinoDialogAction(
-                                                    child: Text("Chấp nhận"),
-                                                    onPressed: () {
-                                                      Navigator.pop(context);
-                                                    },
-                                                )
-                                              ],
-                                            );
-                                          },
-                                      );
-                                    }else if(_user.address == null || _user.phone == 0) {
-                                      showDialog(
-                                        context: context,
-                                        builder: (dialogContext) {
-                                          return CupertinoAlertDialog(
-                                            title: Text("Xác nhận", style: textStyle20.copyWith(color: Colors.black45)),
-                                            content: Container(
-                                              padding: EdgeInsets.symmetric(vertical: 20),
-                                              child: Container(
-                                                padding: EdgeInsets.symmetric(vertical: 20),
-                                                child: Text("Bạn chưa cập nhật sđt và địa chỉ", style: textStyle20.copyWith(color: Colors.black45)),
-                                              ),
-                                            ),
-                                            actions: [
-                                              CupertinoDialogAction(
-                                                child: Text("Quay lại"),
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                },
-                                              ),
-                                              CupertinoDialogAction(
-                                                child: Text("Cập nhật"),
-                                                onPressed: ()  {
-                                                  Navigator.pushReplacementNamed(context, "/main");
-                                                },
-                                              ),
-                                            ],
-                                          );
-                                        },);
-                                    }else if(_isQuantityValid(_product.stock, _calculatingRemain()) == true) {
+                                    if(_isQuantityValid(_product.stock, _calculatingRemain()) == true) {
                                       setState(() {
                                         _totalPrice = _calculatingRemain() * _product.price;
                                       });
@@ -314,7 +367,7 @@ class _BookingState extends State<Booking> {
                                             content: Container(
                                               padding: EdgeInsets.symmetric(vertical: 20),
                                               child: Center(
-                                                child: Text("Bạn có muốn thêm vào giỏ hàng?", style: textStyle20.copyWith(color: Colors.black45)),
+                                                child: Text("Xác nhận thay đổi?", style: textStyle20.copyWith(color: Colors.black45)),
                                               ),
                                             ),
                                             actions: [
@@ -336,7 +389,7 @@ class _BookingState extends State<Booking> {
                                                       _ordId = "${_user.username}_${_product.id}_$_count";
                                                     }
                                                   }
-                                                  await _database.addToShoppingCard("$_ordId", _order, _calculatingRemain(), _product);
+                                                  await _database.editOrder(_orderDoc.documentID, _calculatingRemain(), _getConfirmDate, _product);
                                                   Navigator.pushReplacementNamed(context, "/main");
                                                 },
                                               ),
@@ -352,12 +405,12 @@ class _BookingState extends State<Booking> {
 
                           ],
                         )
-                      );
-                    }else {
-                      return SpinKitChasingDots(color: Colors.green);
-                    }
-                  },
-              ),
+                    );
+                  }else {
+                    return SpinKitChasingDots(color: Colors.green);
+                  }
+                },
+              )
 
 
 

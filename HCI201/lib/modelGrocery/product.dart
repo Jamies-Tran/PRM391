@@ -1,11 +1,11 @@
 class Product {
-  final int id;
-  final String name;
-  final String code;
-  final String category;
-  final int price;
-  final int stock;
-  final String image;
+  int id;
+  String name;
+  String code;
+  String category;
+  int price;
+  int stock;
+  String image;
 
   Product({this.id, this.name, this.code, this.category, this.price, this.stock, this.image});
 
@@ -32,5 +32,4 @@ class Product {
       'image' : this.image
     };
   }
-
 }

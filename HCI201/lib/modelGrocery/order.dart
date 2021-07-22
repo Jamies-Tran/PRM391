@@ -1,13 +1,16 @@
+import 'package:hci_201/modelGrocery/order_product.dart';
+import 'package:hci_201/modelGrocery/product.dart';
 import 'package:hci_201/modelGrocery/user.dart';
 
 class Order {
-  final int id;
-  final String orderDis = "Grocery system";
-  final String orderCus;
-  final int orderStat;
-  final String invoiceDate;
-  final int totalPrice;
-  Users user = Users();
+  int id;
+  String orderDis = "Grocery system";
+  String orderCus;
+  int orderStat;
+  String invoiceDate;
+  int totalPrice;
+
+  final List<OrderProduct> ordProductList = [];
 
   Order({this.id, this.orderCus, this.orderStat, this.invoiceDate, this.totalPrice});
 
@@ -17,17 +20,19 @@ class Order {
       orderCus: json['orderCus'],
       orderStat: json['orderStat'],
       invoiceDate: json['invoiceDate'],
-      totalPrice: json['totalPrice']
+      totalPrice: json['totalOrderPrice']
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id' : this.id,
+      "id" : this.id,
       'orderCus' : this.orderCus,
-      'orderStat' : this.orderStat,
+      'orderSta' : this.orderStat,
       'invoiceDate' : this.invoiceDate,
-      'totalPrice' : this.totalPrice
+      'totalOrderPrice' : this.totalPrice,
+      'orderDis' : this.orderDis,
+      'productInOrder' : this.ordProductList
     };
   }
 

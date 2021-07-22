@@ -21,7 +21,7 @@ class _RegisterState extends State<Register> {
   String email = "";
   String password = "";
   String username = "";
-  String phone = "";
+  int phone = 0;
   String address = "";
   USER_ROLE role = USER_ROLE.GROCERY;
   String error = "";
@@ -33,7 +33,7 @@ class _RegisterState extends State<Register> {
       setState(() {
         isLoading = true;
       });
-      dynamic result = await _auth.registerWithEmailAndPassword(email, password, username, phone, address, role);
+      final result = await _auth.registerWithEmailAndPassword(email, password, username, phone, address, role);
       if(result == null) {
         setState(() {
           error = "Email đăng nhập không hợp lệ.";
@@ -110,7 +110,7 @@ class _RegisterState extends State<Register> {
                     validator: (value) => value.isEmpty ? "Mời bạn nhập số điện thoại" : null,
                     onChanged: (value) {
                       setState(() {
-                        phone = value;
+                        phone = int.parse(value);
                       });
                     }
                 ),

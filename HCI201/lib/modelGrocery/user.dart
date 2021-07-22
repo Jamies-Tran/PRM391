@@ -8,7 +8,7 @@ class Users {
   int phone;
   String email;
   String address;
-  USER_ROLE role;
+  String role;
 
   Users({this.uid, this.id, this.email, this.password, this.username, this.phone, this.address, this.role});
 
@@ -29,10 +29,11 @@ class Users {
       'id' : this.id,
       'username' : this.username,
       'password' : this.password,
-      'phone' : this.phone,
+      'phone' : this.phone.toString(),
       'email' : this.email,
       'address' : this.address,
-      'role' : this.role
+      'role' : this.role,
+      'orderOfUser' : []
     };
   }
 

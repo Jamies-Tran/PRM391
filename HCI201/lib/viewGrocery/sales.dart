@@ -22,11 +22,11 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
   Widget build(BuildContext context) {
     Map _data = ModalRoute.of(context).settings.arguments;
     String date = _data['date'];
-    _api.getProductById(id).then((value) {
-      setState(() {
-        _product = value;
-      });
-    });
+    // _api.getProductById(id).then((value) {
+    //   setState(() {
+    //     _product = value;
+    //   });
+    // });
 
     return Container(
       child: Center(

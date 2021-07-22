@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hci_201/serviceGrocery/auth_service.dart';
 import 'package:hci_201/shared/loading.dart';
+import 'package:hci_201/shared/share_data.dart';
 import 'package:hci_201/shared/text_decoration.dart';
 
 class Login extends StatefulWidget {
@@ -90,13 +91,32 @@ class _LoginState extends State<Login> {
                   }
               ),
               SizedBox(height: 20),
-              RaisedButton(
-                  onPressed: validForm,
+              ButtonTheme(
+                minWidth: MediaQuery.of(context).size.width * 0.5,
+                height: 50,
+                child: RaisedButton(
+                    onPressed: validForm,
+                    color: Colors.green,
+                    child: Text(
+                        "Đăng nhập",
+                        style: textStyle15.copyWith(color: Colors.white),
+                    ),
+                ),
+              ),
+              SizedBox(height: 20),
+              ButtonTheme(
+                minWidth: MediaQuery.of(context).size.width * 0.5,
+                height: 50,
+                child: RaisedButton(
+                  onPressed: () async {
+                    await _auth.signingWithGoogle(USER_ROLE.GROCERY);
+                  },
                   color: Colors.green,
                   child: Text(
-                      "Đăng nhập",
-                      style: textStyle15,
+                    "Đăng nhập bằng google",
+                    style: textStyle15.copyWith(color: Colors.white),
                   ),
+                ),
               ),
               SizedBox(height: 20),
               Text(

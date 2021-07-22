@@ -21,7 +21,7 @@ class Wrapper extends StatelessWidget {
       //     value: DBService(uid: user.uid).userInformation2,
       //     child: MainScreen(),
       // );
-      return MainScreen(userUid: user.uid);
+      return MainScreen(user: user);
     }
   }
 }
